@@ -1,0 +1,29 @@
+name: Temporary Whisper Small Model Download
+
+on:
+  push:
+    branches:
+      - temp-whisper-model-20260920
+
+permissions:
+  contents: read
+
+jobs:
+  download-model:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download multilingual small q5_1 model
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -L --fail --retry 5 \
+            -o ggml-small-q5_1.bin \
+            https://github.com/w3xgroup/taskurio-models/releases/download/whisper-models-v1/ggml-small-q5_1.bin
+          echo "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb  ggml-small-q5_1.bin" | sha256sum --check
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: whisper-small-q5_1
+          path: ggml-small-q5_1.bin
+          compression-level: 0
+          retention-days: 1
